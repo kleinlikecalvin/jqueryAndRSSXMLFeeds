@@ -10,9 +10,47 @@
 
 jQuery( 
 	function() {
-			
-			
-});//end of master function and master jQuery container
+		$(xmlLoader);//calls xmlLoader()
+		function xmlLoader(){
+			$.get("https://cors-anywhere.herokuapp.com/http://staffwww.fullcoll.edu/bterry/cis154/king.xml").done(
+				function(dataKing){
+					// console.log(dataKing)
+					const myData1 = $.xml2json(dataKing);//two ways to read the data: xml and JSON
+					for(let i = 0; i<myData1.item.length; i++){
+						//console.log(i);
+						$("#myXMLList1").append("<div style='text-decoration: underline'> TITLE:  " + myData1.item[i].title + "</div>");
+
+						$("#myXMLList1").append("<div>" + myData1.item[i].title.id + "</div>");
+					}//end for
+				}//end dataKing()
+			).fail(function(){
+				console.log("Error Message: YER FUCKED", status);
+			});//as soon the script is successful in accessing the xml data then it runs the anon function in the done method. If it fails then it runs the fail method	
+			//--------------------------------------------
+			$.get("https://cors-anywhere.herokuapp.com/https://feeds.npr.org/510312/podcast.xml").done(function(dataNPR){
+				const myData2 = $.xml2json(dataNPR);
+				//right click on xml pages to view page source and learn how many tags are at the top. If there's an rss tag then you need to include the channel tag in your code.
+				for(let b = 0; b<myData2.channel.item.length; b++){
+					$("#myXMLList2").append("<ul>");
+					$("#myXMLList2").append("<li><span style='font-weight:bold; color: red; font-size: 18px;'> Story #:  " + (b + 1) + "</span></li>");
+					$("#myXMLList2").append("<li><strong>" + myData2.channel.item[b].title + "</strong></li>");	
+					$("#myXMLList2").append("<li>" + myData2.channel.item[b].link + "</li>");
+					$("#myXMLList2").append("<li><a href='" + myData2.channel.item[b].link + "' target='_blank'>Click for more details" + "</a></li>");
+
+					if(myData2.channel.item[b].image == undefined){
+						$("#myXMLList2").append("<li>No image available</li>");
+					} else {
+						$("#myXMLList2").append("<li>" + myData2.channel.item[b].image.href + "</li>");				
+					}
+					$("#myXMLList2").append("</ul>");
+				}//end for
+
+				const itemNode = $(dataNPR).find("item");
+				$("#myXMLList3").append(itemNode.find("title")[3].textContent + "<br><br><li>" + itemNode.find("description")[3].textContent + "</li>");
+			});
+		}//end xmlLoader()		
+	}
+);//end of master function and master jQuery container
 			
 
 </script>
@@ -42,5 +80,6 @@ jQuery(
 		</ul>
     </div>
 </div>
+<script src="xml2json.js"></script><!--Converts xml to JSON-->
 </body>
 </html>
